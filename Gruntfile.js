@@ -66,6 +66,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-jscs');
 
+  grunt.registerTask('update', ['shell:update']);
   grunt.registerTask('pp', ['jshint', 'jscs', 'buddyjs']);
   grunt.registerTask('test', ['pp', 'mochaTest:unitTest']);
 
