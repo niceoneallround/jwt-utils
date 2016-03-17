@@ -1,0 +1,35 @@
+{
+  "name": "jwt-utils",
+  "version": "1.0.0",
+  "description": "Set of convenience utils and wrappers",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niceoneallround/jwt-utils.git"
+  },
+  "keywords": [
+    "jwt"
+  ],
+  "author": "rich@webshield.io",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/niceoneallround/jwt-utils/issues"
+  },
+  "homepage": "https://github.com/niceoneallround/jwt-utils#readme",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-buddyjs": "^0.1.0",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-jscs": "^2.7.0",
+    "grunt-mocha-test": "^0.12.7",
+    "grunt-shell": "^1.1.1",
+    "mocha": "^2.4.5",
+    "should": "^8.2.2"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^5.7.0"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "preset": "airbnb",
+  "excludeFiles": ["node_modules/**"],
+  "disallowMultipleVarDecl": false,
+  "requireTrailingComma": false,
+  "maximumLineLength": 255
+}
