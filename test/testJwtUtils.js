@@ -7,12 +7,10 @@ var assert = require('assert'),
 describe('jwtHelpers Tests', function () {
   'use strict';
 
-  var cryptoProps = {
+  var jwtOptions = {
     issuer: 'bob.com',
-    jwt: {
-      type: 'HS256',
-      secret: 'secret'
-    }
+    type: 'HS256',
+    secret: 'secret'
   };
 
   function createTestGraph() {
@@ -36,9 +34,9 @@ describe('jwtHelpers Tests', function () {
       var request, token, decoded;
 
       request = createTestGraph();
-      token = jwtHelpers.sign(cryptoProps, request);
+      token = jwtHelpers.sign(jwtOptions, request);
       assert(token, 'no token produced');
-      decoded = jwtHelpers.verify(cryptoProps, token);
+      decoded = jwtHelpers.verify(jwtOptions, token);
       checkTestGraph(jwtHelpers.getPnGraph(decoded));
     }); //it 1.1
 
@@ -47,9 +45,9 @@ describe('jwtHelpers Tests', function () {
       var request, token, body;
 
       request = createTestGraph();
-      token = jwtHelpers.sign(cryptoProps, request);
+      token = jwtHelpers.sign(jwtOptions, request);
       assert(token, 'no token produced');
-      body = jwtHelpers.verifyGetPnGraph(cryptoProps, token);
+      body = jwtHelpers.verifyGetPnGraph(jwtOptions, token);
       checkTestGraph(body);
     }); //it 1.2
 
@@ -61,10 +59,10 @@ describe('jwtHelpers Tests', function () {
       props.privacyPipe = 'https://a_nice_privacy_pipe';
       request = createTestGraph();
 
-      token = jwtHelpers.sign(cryptoProps, request, props);
+      token = jwtHelpers.sign(jwtOptions, request, props);
       assert(token, 'no token produced');
 
-      decoded = jwtHelpers.verify(cryptoProps, token);
+      decoded = jwtHelpers.verify(jwtOptions, token);
       console.log('JWT tests - decoded:%j', decoded);
 
       body = jwtHelpers.getPnGraph(decoded);
