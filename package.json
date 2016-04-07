@@ -1,6 +1,6 @@
 {
   "name": "jwt-utils",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "Set of convenience utils and wrappers",
   "main": "index.js",
   "scripts": {
