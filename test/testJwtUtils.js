@@ -20,18 +20,19 @@ describe('jwtHelpers Tests', function () {
   }
 
   function createTestGraph() {
-    return { '@graph': createTestObject() };
+    return { '@graph': [createTestObject()] };
   }
 
   function checkTestGraph(graph) {
-    return checkTestObject(graph['@graph']);
+    graph.should.have.property('@graph');
+    return checkTestObject(graph['@graph'][0]);
   }
 
-  function checkTestObject(graph) {
+  function checkTestObject(obj) {
     var canon = createTestObject();
-    graph.should.have.property('@id', canon['@id']);
-    graph.should.have.property('@type', canon['@type']);
-    graph.should.have.property('http:bogus.domain.com/prop#name', canon['http:bogus.domain.com/prop#name']);
+    obj.should.have.property('@id', canon['@id']);
+    obj.should.have.property('@type', canon['@type']);
+    obj.should.have.property('http:bogus.domain.com/prop#name', canon['http:bogus.domain.com/prop#name']);
   }
 
   describe('1. JWT Tests using HMAC and shared secret', function () {
@@ -44,6 +45,8 @@ describe('jwtHelpers Tests', function () {
       token = jwtHelpers.sign(jwtOptions, request);
       assert(token, 'no token produced');
       decoded = jwtHelpers.verify(jwtOptions, token);
+
+      console.log('decoded:%j', decoded);
       checkTestObject(jwtHelpers.getPnGraph(decoded));
     }); //it 1.1
 
@@ -88,6 +91,18 @@ describe('jwtHelpers Tests', function () {
       decoded = jwtHelpers.verify(jwtOptions, token);
       checkTestGraph(jwtHelpers.getPnGraph(decoded));
     }); //it 1.4
+
+    /*it('1.5 sign a request and decode with an array of object but no @graph', function () {
+
+      var request, token, decoded;
+
+      request = createTestObject();
+      token = jwtHelpers.sign(jwtOptions, request);
+      assert(token, 'no token produced');
+      decoded = jwtHelpers.verify(jwtOptions, token);
+      console.log('-----1.5 decoded:%j', decoded);
+      checkTestObject(jwtHelpers.getPnGraph(decoded));
+    }); //it 1.5 */
 
   }); // describe 1
 

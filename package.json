@@ -1,6 +1,6 @@
 {
   "name": "jwt-utils",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Set of convenience utils and wrappers",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/niceoneallround/jwt-utils#readme",
   "devDependencies": {
-    "grunt": "^0.4.5",
+    "grunt": "^1.0.1",
     "grunt-buddyjs": "^0.1.0",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-jscs": "^2.7.0",
