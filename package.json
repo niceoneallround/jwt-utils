@@ -19,6 +19,9 @@
     "url": "https://github.com/niceoneallround/jwt-utils/issues"
   },
   "homepage": "https://github.com/niceoneallround/jwt-utils#readme",
+  "engines": {
+    "node": ">=5.x.x"
+  },
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-buddyjs": "^0.1.0",
