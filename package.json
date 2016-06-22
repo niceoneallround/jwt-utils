@@ -1,6 +1,6 @@
 {
   "name": "jwt-utils",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Set of convenience utils and wrappers",
   "main": "index.js",
   "scripts": {
@@ -26,13 +26,13 @@
     "grunt": "^1.0.1",
     "grunt-buddyjs": "^0.1.0",
     "grunt-contrib-jshint": "^1.0.0",
-    "grunt-jscs": "^2.7.0",
+    "grunt-jscs": "^3.0.1",
     "grunt-mocha-test": "^0.12.7",
     "grunt-shell": "^1.1.1",
     "mocha": "^2.4.5",
-    "should": "^8.2.2"
+    "should": "^9.0.2"
   },
   "dependencies": {
-    "jsonwebtoken": "^5.7.0"
+    "jsonwebtoken": "^7.0.1"
   }
 }

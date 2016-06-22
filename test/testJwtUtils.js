@@ -45,6 +45,7 @@ describe('jwtHelpers Tests', function () {
       token = jwtHelpers.sign(jwtOptions, request);
       assert(token, 'no token produced');
       decoded = jwtHelpers.verify(jwtOptions, token);
+      decoded.should.have.property('iss', 'bob.com');
 
       console.log('decoded:%j', decoded);
       checkTestObject(jwtHelpers.getPnGraph(decoded));
@@ -90,6 +91,21 @@ describe('jwtHelpers Tests', function () {
       assert(token, 'no token produced');
       decoded = jwtHelpers.verify(jwtOptions, token);
       checkTestGraph(jwtHelpers.getPnGraph(decoded));
+    }); //it 1.4
+
+    it('1.5 it should sign a request passing a subject', function () {
+      var graph, token, decodedPayload, props;
+
+      graph = createTestGraph();
+      props = {
+        subject: 'http://dummy.subject'
+      };
+
+      token = jwtHelpers.sign(jwtOptions, graph, props);
+      assert(token, 'no token produced');
+      decodedPayload = jwtHelpers.verify(jwtOptions, token);
+
+      decodedPayload.should.have.property('sub', 'http://dummy.subject');
     }); //it 1.4
 
     /*it('1.5 sign a request and decode with an array of object but no @graph', function () {
