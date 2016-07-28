@@ -106,7 +106,24 @@ describe('jwtHelpers Tests', function () {
       decodedPayload = jwtHelpers.verify(jwtOptions, token);
 
       decodedPayload.should.have.property('sub', 'http://dummy.subject');
-    }); //it 1.4
+    }); //it 1.5
+
+    it('1.6 should support decode with not checking signature', function () {
+      var graph, token, decoded, props;
+
+      graph = createTestGraph();
+      props = {
+        subject: 'http://dummy.subject1'
+      };
+
+      token = jwtHelpers.sign(jwtOptions, graph, props);
+      assert(token, 'no token produced');
+      decoded = jwtHelpers.decode(token, { complete: true });
+      decoded.should.have.property('header');
+      decoded.should.have.property('payload');
+
+      console.log('*******:%j', decoded);
+    }); //it 1.6
 
     /*it('1.5 sign a request and decode with an array of object but no @graph', function () {
 
