@@ -7,12 +7,6 @@ var assert = require('assert'),
 describe('jwtHelpers Tests', function () {
   'use strict';
 
-  var jwtOptions = {
-    issuer: 'bob.com',
-    type: 'HS256',
-    secret: 'secret'
-  };
-
   function createTestObject() {
     return { '@id': 'http://bogus.domain.com/bogus1',
           '@type': 'http:/bogus.domain.com/type#Bogus',
@@ -35,66 +29,54 @@ describe('jwtHelpers Tests', function () {
     obj.should.have.property('http:bogus.domain.com/prop#name', canon['http:bogus.domain.com/prop#name']);
   }
 
-  describe('1. JWT Tests using HMAC and shared secret', function () {
+  describe('1. JWT Tests using HS256', function () {
 
-    it('1.1 sign a request and decode with object', function () {
+    var jwtOptions = {
+      issuer: 'bob.com',
+      type: 'HS256',
+      secret: 'secret'
+    };
 
-      var request, token, decoded;
+    it('1.1 should create a JWT from JSON-LD graph and secret, and verify should work', function () {
+      var request, token, verified;
 
       request = createTestObject();
       token = jwtHelpers.sign(jwtOptions, request);
       assert(token, 'no token produced');
-      decoded = jwtHelpers.verify(jwtOptions, token);
-      decoded.should.have.property('iss', 'bob.com');
+      verified = jwtHelpers.verify(jwtOptions, token);
+      verified.should.have.property('iss', 'bob.com');
 
-      console.log('decoded:%j', decoded);
-      checkTestObject(jwtHelpers.getPnGraph(decoded));
+      //console.log('verified result:%j', verified);
+      checkTestObject(jwtHelpers.getPnGraph(verified));
     }); //it 1.1
 
-    it('1.2 sign a request and decode with the verify and get graph with object', function () {
-
+    it('1.2 verifyGetPnGraph should verify a valid JWT and return the graph claim', function () {
       var request, token, body;
 
       request = createTestObject();
       token = jwtHelpers.sign(jwtOptions, request);
-      assert(token, 'no token produced');
       body = jwtHelpers.verifyGetPnGraph(jwtOptions, token);
       checkTestObject(body);
     }); //it 1.2
 
-    it('1.3 sign a request with a privacy pipe and decode with the verify and get graph and get privacy pipe', function () {
-
-      var request, token, body, props, decoded, pp;
+    it('1.3 should create a JWT passing in a graph and a pipe, should record the graph and pipe in the claim', function () {
+      var request, token, graph, props, verified, pp;
 
       props = {};
       props.privacyPipe = 'https://a_nice_privacy_pipe';
-      request = createTestObject();
+      request =  createTestGraph();
 
-      token = jwtHelpers.sign(jwtOptions, request, props);
-      assert(token, 'no token produced');
+      token = jwtHelpers.signPipeData(jwtOptions, request, props);
+      verified = jwtHelpers.verify(jwtOptions, token);
+      graph = jwtHelpers.getPnGraph(verified);
+      checkTestGraph(graph);
 
-      decoded = jwtHelpers.verify(jwtOptions, token);
-      console.log('JWT tests - decoded:%j', decoded);
-
-      body = jwtHelpers.getPnGraph(decoded);
-      body.should.have.property('@id', request['@id']);
-
-      pp = jwtHelpers.getPrivacyPipe(decoded);
-      assert(pp, util.format('no privacy pipe returned:%j?', decoded));
+      pp = jwtHelpers.getPrivacyPipe(verified);
+      assert(pp, util.format('no privacy pipe returned:%j?', verified));
     }); //it 1.3
 
-    it('1.4 sign a request and decode with a graph', function () {
-      var request, token, decoded;
-
-      request = createTestGraph();
-      token = jwtHelpers.signPipeData(jwtOptions, request);
-      assert(token, 'no token produced');
-      decoded = jwtHelpers.verify(jwtOptions, token);
-      checkTestGraph(jwtHelpers.getPnGraph(decoded));
-    }); //it 1.4
-
-    it('1.5 it should sign a request passing a subject', function () {
-      var graph, token, decodedPayload, props;
+    it('1.4 should create and verify and JWT with a passed in sub claim', function () {
+      var graph, token, verified, props;
 
       graph = createTestGraph();
       props = {
@@ -102,40 +84,23 @@ describe('jwtHelpers Tests', function () {
       };
 
       token = jwtHelpers.sign(jwtOptions, graph, props);
-      assert(token, 'no token produced');
-      decodedPayload = jwtHelpers.verify(jwtOptions, token);
+      verified = jwtHelpers.verify(jwtOptions, token);
+      verified.should.have.property('sub', 'http://dummy.subject');
+    }); //it 1.4
 
-      decodedPayload.should.have.property('sub', 'http://dummy.subject');
-    }); //it 1.5
-
-    it('1.6 should support decode with not checking signature', function () {
-      var graph, token, decoded, props;
+    it('1.5 should support decode with not checking signature', function () {
+      var graph, token, decoded;
 
       graph = createTestGraph();
-      props = {
-        subject: 'http://dummy.subject1'
-      };
+      token = jwtHelpers.sign(jwtOptions, graph);
 
-      token = jwtHelpers.sign(jwtOptions, graph, props);
-      assert(token, 'no token produced');
+      // decode gettting header and payload
       decoded = jwtHelpers.decode(token, { complete: true });
       decoded.should.have.property('header');
       decoded.should.have.property('payload');
 
-      console.log('*******:%j', decoded);
-    }); //it 1.6
-
-    /*it('1.5 sign a request and decode with an array of object but no @graph', function () {
-
-      var request, token, decoded;
-
-      request = createTestObject();
-      token = jwtHelpers.sign(jwtOptions, request);
-      assert(token, 'no token produced');
-      decoded = jwtHelpers.verify(jwtOptions, token);
-      console.log('-----1.5 decoded:%j', decoded);
-      checkTestObject(jwtHelpers.getPnGraph(decoded));
-    }); //it 1.5 */
+      console.log('decoded JWT:%j', decoded);
+    }); //it 1.5
 
   }); // describe 1
 
