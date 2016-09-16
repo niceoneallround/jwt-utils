@@ -37,3 +37,27 @@ Example JWT showing just the header and payload.
     "https://pn.schema.webshield.io/prop#metadata: {}
   }
 }
+
+Generating the keys and certs for the RS256 keys - key is 2048
+
+openssl genrsa 2048 > rsa-private.pem
+openssl rsa -in rsa-private.pem -pubout > rsa-public.pem
+openssl req -new -key rsa-private.pem -out rsa.csr
+openssl x509 -req -days 1000 -in rsa.csr -signkey rsa-private.pem -out rsa.x509crt -extfile rsa.ext
+
+
+1. generate a private key
+  1.a openssl genrsa 2048 > rsa-private.pem
+  1.b look at key openssl rsa  -in rsa-private.pem -noout -text
+2. generate public key
+  2.a openssl rsa -in rsa-private.pem -pubout > rsa-public.pem
+  2.b look at it more rsa-public.pem
+3. Generate a certificate signing request (CSR) - note don't need for a self signing but hey
+  3.a openssl req -new -key rsa-private.pem -out rsa.csr
+  3.b look at openssl req -text -in rsa.csr -noout
+4. Self sign the certificate - using an extension file to specify the names
+  4.a create rsa.ext - note all are here as ssytems may not sure the cname
+       subjectAltName = DNS:sv.mds.webshield.io, DNS:sv-1.mds.webshield.io
+  4.b openssl x509 -req -days 365 -in rsa.csr -signkey rsa-private.pem -out rsa.x509crt -extfile rsa.ext
+5. Examine the certificate
+  5.a openssl x509 -text -in rsa.x509crt -noout
