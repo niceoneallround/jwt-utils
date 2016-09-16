@@ -115,7 +115,7 @@ describe('jwtHelpers Tests', function () {
 
   }); // describe 1
 
-  describe('2. JWT Metadata Tests', function () {
+  describe('2. JWT Sign Metadata Tests', function () {
 
     let hs256Options, md, rs256Options;
 
@@ -147,6 +147,8 @@ describe('jwtHelpers Tests', function () {
       verified.should.have.property('iss', 'bob.com');
       verified.should.have.property('sub', props.subject);
       verified.should.have.property(jwtClaims.METADATA_CLAIM);
+      verified.should.not.have.property(jwtClaims.PN_GRAPH_CLAIM);
+      verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
     }); //it 2.1
 
     it('2.2 should create a JWT containing a metadata claim in the payload - signed with a RS256', function () {
@@ -160,17 +162,84 @@ describe('jwtHelpers Tests', function () {
       assert(token, 'no token produced');
 
       decoded = jwtHelpers.decode(token, { complete: true });
-      console.log('*** decoded.header: %j', decoded.header);
+
+      /*console.log('*** decoded.header: %j', decoded.header);
       console.log('*** decoded.payload: %j', decoded.payload);
-      console.log('*** decoded.signature: %j', decoded.signature);
+      console.log('*** decoded.signature: %j', decoded.signature);*/
 
       verified = jwtHelpers.newVerify(token);
       verified.should.have.property('iss', 'bob.com');
       verified.should.have.property('sub', props.subject);
       verified.should.have.property(jwtClaims.METADATA_CLAIM);
-
-    }); //it 2.1
+      verified.should.not.have.property(jwtClaims.PN_GRAPH_CLAIM);
+      verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
+    }); //it 2.2
 
   }); // decscribe 2
+
+  describe('3. JWT Sign Data Tests NO pipe claim', function () {
+
+    let hs256Options, data, rs256Options;
+
+    hs256Options = {
+      issuer: 'bob.com',
+      type: 'HS256',
+      secret: 'secret'
+    };
+
+    rs256Options = {
+      issuer: 'bob.com',
+      type: 'RS256',
+      secret: rsaPrivateKey
+    };
+
+    data = {
+      '@id': 'http://pn.id/fake_id',
+      '@type': 'http://localhost/type#1',
+      'http://bogus.com/prop#1': '23'
+    };
+
+    it('3.1 should create a JWT containing a graph claim in the payload - signed with a HS256', function () {
+      let token, verified,
+          props = { subject: data['@id'] };
+
+      token = jwtHelpers.signData(data, hs256Options, props);
+      assert(token, 'no token produced');
+      verified = jwtHelpers.newVerify(token, hs256Options);
+      console.log('verified result:%j', verified);
+      verified.should.have.property('iss', 'bob.com');
+      verified.should.have.property('sub', props.subject);
+      verified.should.have.property(jwtClaims.PN_GRAPH_CLAIM);
+      verified.should.not.have.property(jwtClaims.METADATA_CLAIM);
+      verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
+    }); //it 3.1
+
+    it('3.2 should create a JWT containing a graph claim in the payload - signed with a RS256', function () {
+      var token, verified, decoded, temp,
+        props = {
+          subject: data['@id'],
+          publicKey: rsaPublicKey,
+          x509Cert:  rsaX509cert };
+
+      token = jwtHelpers.signData(data, rs256Options, props);
+      assert(token, 'no token produced');
+
+      decoded = jwtHelpers.decode(token, { complete: true });
+
+      /*console.log('*** decoded.header: %j', decoded.header);
+      console.log('*** decoded.payload: %j', decoded.payload);
+      console.log('*** decoded.signature: %j', decoded.signature);*/
+
+      verified = jwtHelpers.newVerify(token);
+      verified.should.have.property('iss', 'bob.com');
+      verified.should.have.property('sub', props.subject);
+      verified.should.have.property(jwtClaims.PN_GRAPH_CLAIM);
+      temp =  jwtHelpers.getPnGraph(verified);
+      temp.should.have.property('@id', props.subject);
+      verified.should.not.have.property(jwtClaims.METADATA_CLAIM);
+      verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
+    }); //it 3.2
+
+  }); // decscribe 3
 
 }); // describe
