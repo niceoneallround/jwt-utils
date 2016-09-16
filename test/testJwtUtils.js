@@ -1,9 +1,19 @@
 /*jslint node: true, vars: true */
-var assert = require('assert'),
-    jwtHelpers = require('../lib/jwtUtils').jwtUtils,
-    jwtClaims = require('../lib/jwtUtils').claims,
-    should = require('should'),
-    util = require('util');
+const assert = require('assert');
+const jwtHelpers = require('../lib/jwtUtils').jwtUtils;
+const jwtClaims = require('../lib/jwtUtils').claims;
+const should = require('should');
+const fs = require('fs');
+const util = require('util');
+
+function readfile(path) {
+  'use strict';
+  return fs.readFileSync(__dirname + '/' + path).toString();
+}
+
+const rsaPrivateKey = readfile('rsa-private.pem');
+const rsaPublicKey = readfile('rsa-public.pem');
+const rsaX509cert = readfile('rsa.x509crt');
 
 describe('jwtHelpers Tests', function () {
   'use strict';
@@ -107,7 +117,7 @@ describe('jwtHelpers Tests', function () {
 
   describe('2. JWT Metadata Tests', function () {
 
-    let hs256Options, md, props;
+    let hs256Options, md, rs256Options;
 
     hs256Options = {
       issuer: 'bob.com',
@@ -115,8 +125,10 @@ describe('jwtHelpers Tests', function () {
       secret: 'secret'
     };
 
-    props = {
-      subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1'
+    rs256Options = {
+      issuer: 'bob.com',
+      type: 'RS256',
+      secret: rsaPrivateKey
     };
 
     md = {
@@ -124,16 +136,39 @@ describe('jwtHelpers Tests', function () {
       'http://bogus.com/prop#1': '23'
     };
 
-    it('2.1 should create a JWT containing a metadata claim in the payload', function () {
-      var token, verified;
+    it('2.1 should create a JWT containing a metadata claim in the payload - signed with a HS256', function () {
+      let token, verified,
+          props = { subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1' };
 
       token = jwtHelpers.signMetadata(md, hs256Options, props);
       assert(token, 'no token produced');
-      verified = jwtHelpers.verify(hs256Options, token);
+      verified = jwtHelpers.newVerify(token, hs256Options);
       console.log('verified result:%j', verified);
       verified.should.have.property('iss', 'bob.com');
       verified.should.have.property('sub', props.subject);
       verified.should.have.property(jwtClaims.METADATA_CLAIM);
+    }); //it 2.1
+
+    it('2.2 should create a JWT containing a metadata claim in the payload - signed with a RS256', function () {
+      var token, verified, decoded,
+        props = {
+          subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1',
+          publicKey: rsaPublicKey,
+          x509Cert:  rsaX509cert };
+
+      token = jwtHelpers.signMetadata(md, rs256Options, props);
+      assert(token, 'no token produced');
+
+      decoded = jwtHelpers.decode(token, { complete: true });
+      console.log('*** decoded.header: %j', decoded.header);
+      console.log('*** decoded.payload: %j', decoded.payload);
+      console.log('*** decoded.signature: %j', decoded.signature);
+
+      verified = jwtHelpers.newVerify(token);
+      verified.should.have.property('iss', 'bob.com');
+      verified.should.have.property('sub', props.subject);
+      verified.should.have.property(jwtClaims.METADATA_CLAIM);
+
     }); //it 2.1
 
   }); // decscribe 2
