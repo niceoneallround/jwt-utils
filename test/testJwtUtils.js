@@ -1,6 +1,7 @@
 /*jslint node: true, vars: true */
 var assert = require('assert'),
     jwtHelpers = require('../lib/jwtUtils').jwtUtils,
+    jwtClaims = require('../lib/jwtUtils').claims,
     should = require('should'),
     util = require('util');
 
@@ -103,5 +104,38 @@ describe('jwtHelpers Tests', function () {
     }); //it 1.5
 
   }); // describe 1
+
+  describe('2. JWT Metadata Tests', function () {
+
+    let hs256Options, md, props;
+
+    hs256Options = {
+      issuer: 'bob.com',
+      type: 'HS256',
+      secret: 'secret'
+    };
+
+    props = {
+      subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1'
+    };
+
+    md = {
+      '@type': 'http://localhost/md#1',
+      'http://bogus.com/prop#1': '23'
+    };
+
+    it('2.1 should create a JWT containing a metadata claim in the payload', function () {
+      var token, verified;
+
+      token = jwtHelpers.signMetadata(md, hs256Options, props);
+      assert(token, 'no token produced');
+      verified = jwtHelpers.verify(hs256Options, token);
+      console.log('verified result:%j', verified);
+      verified.should.have.property('iss', 'bob.com');
+      verified.should.have.property('sub', props.subject);
+      verified.should.have.property(jwtClaims.METADATA_CLAIM);
+    }); //it 2.1
+
+  }); // decscribe 2
 
 }); // describe

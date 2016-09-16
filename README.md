@@ -1,24 +1,39 @@
 
 Provides JWT utils that are used inside the Privacy Network.
 
-The adds the following custom properties to a JWT
- - https://pn.schema.webshield.io/prop#pn_graph - holds a JSON-LD graph
+Private claims that can be added to the payload
+ - https://pn.schema.webshield.io/prop#metadata - holds metadata claims
+   - note the whole JWT is needed to create JSON-LD metadata node - for example sub is the @id
+ - https://pn.schema.webshield.io/prop#pn_graph - holds subject data in a JSON-LD graph
  - https://pn.schema.webshield.io/prop#privacy_pipe' - optional and holds the privacy pipe @id
 
-It provides the following options for creating a JWT
- - issuer - the issuer and placed in the payload.iss property
- - type - the type of signing that should be used, only supports HS256 for now
- - secret - the secret that should be used for signing
- - subject - optional - the subject of the JWY placed in payload.sub property
- - privacy_pipe - optional - the @id of a privacy pipe that needs to be associated with the operation in pn_p.privacy_pipe
- - graph - the @graph to be placed in the pn_p.pn_graph property.
+Standard claims
+ - iss required
+ - sub (optional)
+ - exp (optional)
+ - iat added
+
+Signing
+  - HS256 shared secret is passed in
+  - RS256 so add PEM files to the JWT for verification the following header props are used
+    - http://pn.schema.webshield.io/prop#jwk_pem - holds the public key PEM
+    - http://pn.schema.webshield.io/prop#x5c_pem - holds an array with the x509cert PEM for the public key.
 
 It uses the following node module
  - https://github.com/auth0/node-jsonwebtoken
 
-It provides utils
- - sign - creates a JWT from passed in properties
- - verify - verifies the JWT signature and returns the payload
- - verifyGetPnGraph - verifies the JWT signature, returns payload[https://pn.schema.webshield.io/prop#pn_graph]
- - getPnGraph returns payload[https://pn.schema.webshield.io/prop#pn_graph]
- - getPivacyPipe returns payload[https://pn.schema.webshield.io/prop#privacy_pipe];
+
+Example JWT showing just the header and payload.
+
+{ header: {
+    "alg": "RS256",
+    "typ": "JWT",
+    "http://pn.schema.webshield.io/prop#jwk_pem": 'public key pem',
+    "http://pn.schema.webshield.io/prop#x5c_pem": [ 'x509cert pem']
+  },
+  payload: {
+    "iss": "abc.xom",
+    "sub": "http://md.pn.id.webshield.io/resource/xom/abc#1",
+    "https://pn.schema.webshield.io/prop#metadata: {}
+  }
+}
