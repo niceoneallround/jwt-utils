@@ -177,7 +177,7 @@ describe('jwtHelpers Tests', function () {
 
   }); // decscribe 2
 
-  describe('3. JWT Sign Data Tests NO pipe claim', function () {
+  describe('3. JWT Sign Data Tests', function () {
 
     let hs256Options, data, rs256Options;
 
@@ -239,6 +239,21 @@ describe('jwtHelpers Tests', function () {
       verified.should.not.have.property(jwtClaims.METADATA_CLAIM);
       verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
     }); //it 3.2
+
+    it('3.3 should create a JWT containing a graph claim in the payload and a pipe - signed with a HS256', function () {
+      let token, verified,
+          props = { subject: data['@id'], privacyPipe: 'a-pipe' };
+
+      token = jwtHelpers.signData(data, hs256Options, props);
+      assert(token, 'no token produced');
+      verified = jwtHelpers.newVerify(token, hs256Options);
+      console.log('verified result:%j', verified);
+      verified.should.have.property('iss', 'bob.com');
+      verified.should.have.property('sub', props.subject);
+      verified.should.have.property(jwtClaims.PN_GRAPH_CLAIM);
+      verified.should.not.have.property(jwtClaims.METADATA_CLAIM);
+      verified.should.have.property(jwtClaims.PRIVACY_PIPE_CLAIM, 'a-pipe');
+    }); //it 3.3
 
   }); // decscribe 3
 
