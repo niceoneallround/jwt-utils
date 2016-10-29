@@ -175,6 +175,32 @@ describe('jwtHelpers Tests', function () {
       verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
     }); //it 2.2
 
+    it('2.3 should create a JWT containing a metadata claim and provision in the payload - signed with a RS256', function () {
+      var token, verified, decoded,
+        props = {
+          subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1',
+          provision: 'provision-data',
+          publicKey: rsaPublicKey,
+          x509Cert:  rsaX509cert };
+
+      token = jwtHelpers.signMetadata(md, rs256Options, props);
+      assert(token, 'no token produced');
+
+      decoded = jwtHelpers.decode(token, { complete: true });
+
+      /*console.log('*** decoded.header: %j', decoded.header);
+      console.log('*** decoded.payload: %j', decoded.payload);
+      console.log('*** decoded.signature: %j', decoded.signature);*/
+
+      verified = jwtHelpers.newVerify(token);
+      verified.should.have.property('iss', 'bob.com');
+      verified.should.have.property('sub', props.subject);
+      verified.should.have.property(jwtClaims.METADATA_CLAIM);
+      verified.should.have.property(jwtClaims.PROVISION_CLAIM, 'provision-data');
+      verified.should.not.have.property(jwtClaims.PN_GRAPH_CLAIM);
+      verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
+    }); //it 2.2
+
   }); // decscribe 2
 
   describe('3. JWT Sign Data Tests', function () {
