@@ -18,28 +18,6 @@ const rsaX509cert = readfile('rsa.x509crt');
 describe('jwtHelpers Tests', function () {
   'use strict';
 
-  function createTestObject() {
-    return { '@id': 'http://bogus.domain.com/bogus1',
-          '@type': 'http:/bogus.domain.com/type#Bogus',
-          'http:bogus.domain.com/prop#name': 'heya' };
-  }
-
-  function createTestGraph() {
-    return { '@graph': [createTestObject()] };
-  }
-
-  function checkTestGraph(graph) {
-    graph.should.have.property('@graph');
-    return checkTestObject(graph['@graph'][0]);
-  }
-
-  function checkTestObject(obj) {
-    var canon = createTestObject();
-    obj.should.have.property('@id', canon['@id']);
-    obj.should.have.property('@type', canon['@type']);
-    obj.should.have.property('http:bogus.domain.com/prop#name', canon['http:bogus.domain.com/prop#name']);
-  }
-
   describe('1. JWT Tests using HS256', function () {
 
     var jwtOptions = {
@@ -117,32 +95,29 @@ describe('jwtHelpers Tests', function () {
 
   describe('2. JWT Sign Metadata Tests', function () {
 
-    let hs256Options, md, rs256Options;
-
-    hs256Options = {
+    let hs256Options = {
       issuer: 'bob.com',
       type: 'HS256',
       secret: 'secret'
     };
 
-    rs256Options = {
+    let rs256Options = {
       issuer: 'bob.com',
       type: 'RS256',
       secret: rsaPrivateKey
     };
 
-    md = {
+    let md = {
       '@type': 'http://localhost/md#1',
       'http://bogus.com/prop#1': '23'
     };
 
     it('2.1 should create a JWT containing a metadata claim in the payload - signed with a HS256', function () {
-      let token, verified,
-          props = { subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1' };
+      let props = { subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1' };
 
-      token = jwtHelpers.signMetadata(md, hs256Options, props);
+      let token = jwtHelpers.signMetadata(md, hs256Options, props);
       assert(token, 'no token produced');
-      verified = jwtHelpers.newVerify(token, hs256Options);
+      let verified = jwtHelpers.newVerify(token, hs256Options);
       verified.should.have.property('iss', 'bob.com');
       verified.should.have.property('sub', props.subject);
       verified.should.have.property(jwtClaims.METADATA_CLAIM);
@@ -151,22 +126,20 @@ describe('jwtHelpers Tests', function () {
     }); //it 2.1
 
     it('2.2 should create a JWT containing a metadata claim in the payload - signed with a RS256', function () {
-      var token, verified, decoded,
-        props = {
+      let props = {
           subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1',
           publicKey: rsaPublicKey,
           x509Cert:  rsaX509cert };
 
-      token = jwtHelpers.signMetadata(md, rs256Options, props);
+      let token = jwtHelpers.signMetadata(md, rs256Options, props);
       assert(token, 'no token produced');
 
-      decoded = jwtHelpers.decode(token, { complete: true });
-
+      //let decoded = jwtHelpers.decode(token, { complete: true });
       /*console.log('*** decoded.header: %j', decoded.header);
       console.log('*** decoded.payload: %j', decoded.payload);
       console.log('*** decoded.signature: %j', decoded.signature);*/
 
-      verified = jwtHelpers.newVerify(token);
+      let verified = jwtHelpers.newVerify(token);
       verified.should.have.property('iss', 'bob.com');
       verified.should.have.property('sub', props.subject);
       verified.should.have.property(jwtClaims.METADATA_CLAIM);
@@ -175,30 +148,28 @@ describe('jwtHelpers Tests', function () {
     }); //it 2.2
 
     it('2.3 should create a JWT containing a metadata claim and provision in the payload - signed with a RS256', function () {
-      var token, verified, decoded,
-        props = {
+      let props = {
           subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1',
           provision: 'provision-data',
           publicKey: rsaPublicKey,
           x509Cert:  rsaX509cert };
 
-      token = jwtHelpers.signMetadata(md, rs256Options, props);
+      let token = jwtHelpers.signMetadata(md, rs256Options, props);
       assert(token, 'no token produced');
 
-      decoded = jwtHelpers.decode(token, { complete: true });
-
+      //let decoded = jwtHelpers.decode(token, { complete: true });
       /*console.log('*** decoded.header: %j', decoded.header);
       console.log('*** decoded.payload: %j', decoded.payload);
       console.log('*** decoded.signature: %j', decoded.signature);*/
 
-      verified = jwtHelpers.newVerify(token);
+      let verified = jwtHelpers.newVerify(token);
       verified.should.have.property('iss', 'bob.com');
       verified.should.have.property('sub', props.subject);
       verified.should.have.property(jwtClaims.METADATA_CLAIM);
       verified.should.have.property(jwtClaims.PROVISION_CLAIM, 'provision-data');
       verified.should.not.have.property(jwtClaims.PN_GRAPH_CLAIM);
       verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
-    }); //it 2.2
+    }); //it 2.3
 
   }); // decscribe 2
 
@@ -341,3 +312,92 @@ describe('jwtHelpers Tests', function () {
   }); // decscribe 4
 
 }); // describe
+
+describe('5 JWT Encrypt Key Metadata Claim (EKMD) Tests', function () {
+  'use strict';
+
+  let hs256Options = {
+    issuer: 'bob.com',
+    type: 'HS256',
+    secret: 'secret'
+  };
+
+  let rs256Options = {
+    issuer: 'bob.com',
+    type: 'RS256',
+    secret: rsaPrivateKey
+  };
+
+  let ekmd = {
+    kty: 'a_kty',
+    k: { '@type': 'a_type', '@value': 'a_value' },
+  };
+
+  it('5.1 should create a JWT containing a encrypt key metadata claim in the payload - signed with a HS256', function () {
+    let props = { subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1' };
+
+    let token = jwtHelpers.signEncryptKeyMetadata(ekmd, hs256Options, props);
+    assert(token, 'no token produced');
+    let verified = jwtHelpers.newVerify(token, hs256Options);
+    verified.should.have.property('iss', 'bob.com');
+    verified.should.have.property('sub', props.subject);
+    verified.should.have.property(jwtClaims.ENCRYPT_KEY_MD_CLAIM, ekmd);
+    verified.should.not.have.property(jwtClaims.METADATA_CLAIM);
+    verified.should.not.have.property(jwtClaims.PN_GRAPH_CLAIM);
+    verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
+  }); //it 5.1
+
+  it('5.2 should create a JWT containing an encrypt key metadata claim in the payload - signed with a RS256', function () {
+    let props = {
+        subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1',
+        publicKey: rsaPublicKey,
+        x509Cert:  rsaX509cert };
+
+    let token = jwtHelpers.signEncryptKeyMetadata(ekmd, rs256Options, props);
+    assert(token, 'no token produced');
+
+    //let decoded = jwtHelpers.decode(token, { complete: true });
+    /*console.log('*** decoded.header: %j', decoded.header);
+    console.log('*** decoded.payload: %j', decoded.payload);
+    console.log('*** decoded.signature: %j', decoded.signature);*/
+
+    let verified = jwtHelpers.newVerify(token);
+    verified.should.have.property('iss', 'bob.com');
+    verified.should.have.property('sub', props.subject);
+    verified.should.have.property(jwtClaims.ENCRYPT_KEY_MD_CLAIM, ekmd);
+    verified.should.not.have.property(jwtClaims.METADATA_CLAIM);
+    verified.should.not.have.property(jwtClaims.PN_GRAPH_CLAIM);
+    verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
+  }); //it 5.2
+
+}); // decscribe 5
+
+//--------------------
+// HELPER FUNCTIONS
+//--------------------
+
+function createTestObject() {
+  'use strict';
+  return { '@id': 'http://bogus.domain.com/bogus1',
+        '@type': 'http:/bogus.domain.com/type#Bogus',
+        'http:bogus.domain.com/prop#name': 'heya' };
+}
+
+function createTestGraph() {
+  'use strict';
+  return { '@graph': [createTestObject()] };
+}
+
+function checkTestGraph(graph) {
+  'use strict';
+  graph.should.have.property('@graph');
+  return checkTestObject(graph['@graph'][0]);
+}
+
+function checkTestObject(obj) {
+  'use strict';
+  let canon = createTestObject();
+  obj.should.have.property('@id', canon['@id']);
+  obj.should.have.property('@type', canon['@type']);
+  obj.should.have.property('http:bogus.domain.com/prop#name', canon['http:bogus.domain.com/prop#name']);
+}

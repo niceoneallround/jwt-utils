@@ -1,6 +1,6 @@
 {
   "name": "jwt-utils",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Set of convenience utils and wrappers",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,7 @@
     "node": ">=5.x.x"
   },
   "devDependencies": {
+    "grunt": "^1.0.1",
     "gulp": "^3.9.1",
     "gulp-buddy.js": "^1.0.0",
     "gulp-istanbul": "^1.0.0",
@@ -33,9 +34,9 @@
     "js-yaml": "^3.6.1",
     "jshint": "^2.9.2",
     "jshint-stylish": "^2.2.0",
-    "grunt": "^1.0.1",
     "mocha": "^3.1.2",
-    "should": "^11.1.1"
+    "should": "^11.1.1",
+    "yargs": "^6.4.0"
   },
   "dependencies": {
     "jsonwebtoken": "^7.0.1"
