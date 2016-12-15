@@ -1,8 +1,8 @@
 {
   "name": "jwt-utils",
-  "version": "1.1.9",
-  "description": "Set of convenience utils and wrappers",
-  "main": "index.js",
+  "version": "1.1.11",
+  "description": "Set of JWT convenience utils and wrappers",
+  "main": "none",
   "scripts": {
     "test": "gulp test",
     "build": "gulp test"
@@ -36,10 +36,10 @@
     "jshint": "^2.9.2",
     "jshint-stylish": "^2.2.0",
     "mocha": "^3.1.2",
-    "should": "^11.1.1",
-    "yargs": "^6.4.0"
+    "should": "^11.1.2",
+    "yargs": "^6.5.0"
   },
   "dependencies": {
-    "jsonwebtoken": "^7.0.1"
+    "jsonwebtoken": "^7.2.1"
   }
 }

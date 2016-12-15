@@ -12,8 +12,8 @@ function readfile(path) {
 }
 
 const rsaPrivateKey = readfile('rsa-private.pem');
-const rsaPublicKey = readfile('rsa-public.pem');
-const rsaX509cert = readfile('rsa.x509crt');
+const rsaPublicKeyPEM = readfile('rsa-public.pem');
+const rsaX509certPEM = readfile('rsa.x509crt');
 
 describe('jwtHelpers Tests', function () {
   'use strict';
@@ -104,7 +104,9 @@ describe('jwtHelpers Tests', function () {
     let rs256Options = {
       issuer: 'bob.com',
       type: 'RS256',
-      secret: rsaPrivateKey
+      secret: rsaPrivateKey,
+      publicKeyPEM: rsaPublicKeyPEM,
+      x509CertPEM: rsaX509certPEM,
     };
 
     let md = {
@@ -127,9 +129,7 @@ describe('jwtHelpers Tests', function () {
 
     it('2.2 should create a JWT containing a metadata claim in the payload - signed with a RS256', function () {
       let props = {
-          subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1',
-          publicKey: rsaPublicKey,
-          x509Cert:  rsaX509cert };
+          subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1', };
 
       let token = jwtHelpers.signMetadata(md, rs256Options, props);
       assert(token, 'no token produced');
@@ -150,9 +150,7 @@ describe('jwtHelpers Tests', function () {
     it('2.3 should create a JWT containing a metadata claim and provision in the payload - signed with a RS256', function () {
       let props = {
           subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1',
-          provision: 'provision-data',
-          publicKey: rsaPublicKey,
-          x509Cert:  rsaX509cert };
+          provision: 'provision-data', };
 
       let token = jwtHelpers.signMetadata(md, rs256Options, props);
       assert(token, 'no token produced');
@@ -186,7 +184,9 @@ describe('jwtHelpers Tests', function () {
     rs256Options = {
       issuer: 'bob.com',
       type: 'RS256',
-      secret: rsaPrivateKey
+      secret: rsaPrivateKey,
+      publicKeyPEM: rsaPublicKeyPEM,
+      x509CertPEM: rsaX509certPEM,
     };
 
     data = {
@@ -212,9 +212,7 @@ describe('jwtHelpers Tests', function () {
     it('3.2 should create a JWT containing a graph claim in the payload - signed with a RS256', function () {
       var token, verified, decoded, temp,
         props = {
-          subject: data['@id'],
-          publicKey: rsaPublicKey,
-          x509Cert:  rsaX509cert };
+          subject: data['@id'], };
 
       token = jwtHelpers.signData(data, rs256Options, props);
       assert(token, 'no token produced');
@@ -262,7 +260,9 @@ describe('jwtHelpers Tests', function () {
     let rs256Options = {
       issuer: 'bob.com',
       type: 'RS256',
-      secret: rsaPrivateKey
+      secret: rsaPrivateKey,
+      publicKeyPEM: rsaPublicKeyPEM,
+      x509CertPEM: rsaX509certPEM,
     };
 
     let provision = {
@@ -289,9 +289,7 @@ describe('jwtHelpers Tests', function () {
       var token, verified, decoded,
         props = {
           subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1',
-          privacyPipe: '1',
-          publicKey: rsaPublicKey,
-          x509Cert:  rsaX509cert };
+          privacyPipe: '1', };
 
       token = jwtHelpers.signProvision(provision, rs256Options, props);
       assert(token, 'no token produced');
@@ -325,7 +323,9 @@ describe('5 JWT Encrypt Key Metadata Claim (EKMD) Tests', function () {
   let rs256Options = {
     issuer: 'bob.com',
     type: 'RS256',
-    secret: rsaPrivateKey
+    secret: rsaPrivateKey,
+    publicKeyPEM: rsaPublicKeyPEM,
+    x509CertPEM: rsaX509certPEM,
   };
 
   let ekmd = {
@@ -349,9 +349,7 @@ describe('5 JWT Encrypt Key Metadata Claim (EKMD) Tests', function () {
 
   it('5.2 should create a JWT containing an encrypt key metadata claim in the payload - signed with a RS256', function () {
     let props = {
-        subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1',
-        publicKey: rsaPublicKey,
-        x509Cert:  rsaX509cert };
+        subject: 'http://md.pn.id.webshield.io/dummy/com/noway#1', };
 
     let token = jwtHelpers.signEncryptKeyMetadata(ekmd, rs256Options, props);
     assert(token, 'no token produced');
