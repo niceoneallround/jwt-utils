@@ -104,7 +104,7 @@ describe('jwtHelpers Tests', function () {
     let rs256Options = {
       issuer: 'bob.com',
       type: 'RS256',
-      secret: rsaPrivateKey,
+      privateKey: rsaPrivateKey,
       publicKeyPEM: rsaPublicKeyPEM,
       x509CertPEM: rsaX509certPEM,
     };
@@ -184,7 +184,7 @@ describe('jwtHelpers Tests', function () {
     rs256Options = {
       issuer: 'bob.com',
       type: 'RS256',
-      secret: rsaPrivateKey,
+      privateKey: rsaPrivateKey,
       publicKeyPEM: rsaPublicKeyPEM,
       x509CertPEM: rsaX509certPEM,
     };
@@ -260,7 +260,7 @@ describe('jwtHelpers Tests', function () {
     let rs256Options = {
       issuer: 'bob.com',
       type: 'RS256',
-      secret: rsaPrivateKey,
+      privateKey: rsaPrivateKey,
       publicKeyPEM: rsaPublicKeyPEM,
       x509CertPEM: rsaX509certPEM,
     };
@@ -323,7 +323,7 @@ describe('5 JWT Encrypt Key Metadata Claim (EKMD) Tests', function () {
   let rs256Options = {
     issuer: 'bob.com',
     type: 'RS256',
-    secret: rsaPrivateKey,
+    privateKey: rsaPrivateKey,
     publicKeyPEM: rsaPublicKeyPEM,
     x509CertPEM: rsaX509certPEM,
   };
