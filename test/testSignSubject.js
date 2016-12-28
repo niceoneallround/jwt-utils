@@ -36,14 +36,17 @@ describe('1 Sign Subject Tests', function () {
     '@type': 'http:/bogus.domain.com/type#Bogus',
     'http:bogus.domain.com/prop#name': 'heya', };
 
+  let pnDataModelId = '23';
+
   it('1.1 HS256 - hould create a JWT containing a subject claim in the payload', function () {
     let props = { subject: subject['@id'] };
 
-    let token = jwtHelpers.signSubject(subject, hs256Options, props);
+    let token = jwtHelpers.signSubject(subject, pnDataModelId, hs256Options, props);
     assert(token, 'no token produced');
     let verified = jwtHelpers.newVerify(token, hs256Options);
     verified.should.have.property('iss', 'bob.com');
     verified.should.have.property('sub', subject['@id']);
+    verified.should.have.property(jwtClaims.PN_DATA_MODEL_CLAIM, pnDataModelId);
     verified.should.have.property(jwtClaims.SUBJECT_CLAIM, subject);
     verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
   }); //it 1.1
@@ -51,7 +54,7 @@ describe('1 Sign Subject Tests', function () {
   it('1.2 RS256 - should should create a JWT containing a subject claim in the payload', function () {
 
     let props = { subject: subject['@id'] };
-    let token = jwtHelpers.signSubject(subject, rs256Options, props);
+    let token = jwtHelpers.signSubject(subject, pnDataModelId, rs256Options, props);
     assert(token, 'no token produced');
 
     //let decoded = jwtHelpers.decode(token, { complete: true });
@@ -62,6 +65,7 @@ describe('1 Sign Subject Tests', function () {
     let verified = jwtHelpers.newVerify(token);
     verified.should.have.property('iss', 'bob.com');
     verified.should.have.property('sub', subject['@id']);
+    verified.should.have.property(jwtClaims.PN_DATA_MODEL_CLAIM, pnDataModelId);
     verified.should.have.property(jwtClaims.SUBJECT_CLAIM, subject);
     verified.should.not.have.property(jwtClaims.PRIVACY_PIPE_CLAIM);
   }); //it 1.2

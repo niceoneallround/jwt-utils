@@ -36,7 +36,9 @@ describe('1 Sign Syndicate Request Tests', function () {
     '@type': 'http:/bogus.domain.com/type#Bogus',
     'http://bogus.domain.com/prop#name': 'heya', };
 
-  let subjectJWT = JWTUtils.signSubject(subject, rs256Options, { subject: subject['@id'] });
+  let pnDataModelId = '23';
+
+  let subjectJWT = JWTUtils.signSubject(subject, pnDataModelId, rs256Options, { subject: subject['@id'] });
 
   let syndRequest = {
     '@id': 'http://fake.synd.request',
