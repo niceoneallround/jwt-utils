@@ -1,7 +1,7 @@
 {
   "name": "jwt-utils",
-  "version": "1.1.12",
-  "description": "Set of JWT convenience utils and wrappers",
+  "version": "1.1.13",
+  "description": "Set of JWT claims, convenience utils, and wrappers",
   "main": "none",
   "scripts": {
     "test": "gulp test",
