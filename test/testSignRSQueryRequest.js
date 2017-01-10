@@ -2,6 +2,7 @@
 const assert = require('assert');
 const JWTUtils = require('../lib/jwtUtils').jwtUtils;
 const JWTClaims = require('../lib/jwtUtils').claims;
+const JWTType = require('../lib/jwtUtils').jwtType;
 const should = require('should');
 const fs = require('fs');
 
@@ -52,7 +53,7 @@ describe('1 Sign RS Query Tests', function () {
     function () {
       let props = { subject: query['@id'] };
 
-      let token = JWTUtils.signRSQueryRequest(query, syndEnt, subject, privacyPipeId, hs256Options, props);
+      let token = JWTUtils.signRSQuery(query, syndEnt, subject, privacyPipeId, hs256Options, props);
       assert(token, 'no token produced');
       let verified = JWTUtils.newVerify(token, hs256Options);
       verified.should.have.property('iss', 'bob.com');
@@ -60,13 +61,14 @@ describe('1 Sign RS Query Tests', function () {
       verified.should.have.property(JWTClaims.QUERY_CLAIM, query);
       verified.should.have.property(JWTClaims.SYNDICATED_ENTITY_CLAIM, syndEnt);
       verified.should.have.property(JWTClaims.SUBJECT_CLAIM, subject);
+      verified.should.have.property(JWTClaims.PN_JWT_TYPE_CLAIM, JWTType.rsQuery);
       verified.should.have.property(JWTClaims.PRIVACY_PIPE_CLAIM, privacyPipeId);
     }); //it 1.1
 
   it('1.2 RS256 - should should create a JWT containing a subject claim in the payload', function () {
 
     let props = { subject: query['@id'] };
-    let token = JWTUtils.signRSQueryRequest(query, syndEnt, subject, privacyPipeId, rs256Options, props);
+    let token = JWTUtils.signRSQuery(query, syndEnt, subject, privacyPipeId, rs256Options, props);
     assert(token, 'no token produced');
     let verified = JWTUtils.newVerify(token, rs256Options);
     verified.should.have.property('iss', 'bob.com');
@@ -74,6 +76,7 @@ describe('1 Sign RS Query Tests', function () {
     verified.should.have.property(JWTClaims.QUERY_CLAIM, query);
     verified.should.have.property(JWTClaims.SYNDICATED_ENTITY_CLAIM, syndEnt);
     verified.should.have.property(JWTClaims.SUBJECT_CLAIM, subject);
+    verified.should.have.property(JWTClaims.PN_JWT_TYPE_CLAIM, JWTType.rsQuery);
     verified.should.have.property(JWTClaims.PRIVACY_PIPE_CLAIM, privacyPipeId);
 
   }); //it 1.2
