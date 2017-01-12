@@ -15,7 +15,7 @@ const rsaPrivateKey = readfile('rsa-private.pem');
 const rsaPublicKeyPEM = readfile('rsa-public.pem');
 const rsaX509certPEM = readfile('rsa.x509crt');
 
-describe('1 Sign Error Tests', function () {
+describe('1 Sign Message Ack Tests', function () {
   'use strict';
 
   let hs256Options = {
@@ -32,30 +32,27 @@ describe('1 Sign Error Tests', function () {
     x509CertPEM: rsaX509certPEM,
   };
 
-  let error = { '@id': 'fake', };
   let id = '23';
 
-  it('1.1 HS256 - should create a JWT containing an error and message ack claim',
+  it('1.1 HS256 - should create a JWT containing message ack claim',
     function () {
-      let token = JWTUtils.signError(id, error, hs256Options);
+      let token = JWTUtils.signMessageAck(id, hs256Options);
       assert(token, 'no token produced');
       let verified = JWTUtils.newVerify(token, hs256Options);
       verified.should.have.property('iss', 'bob.com');
       verified.should.have.property('sub', id);
-      verified.should.have.property(JWTClaims.ERROR_CLAIM, error);
       verified.should.have.property(JWTClaims.MESSAGE_ACK_ID_CLAIM, id);
-      verified.should.have.property(JWTClaims.PN_JWT_TYPE_CLAIM, JWTType.error);
+      verified.should.have.property(JWTClaims.PN_JWT_TYPE_CLAIM, JWTType.messageAck);
     }); //it 1.1
 
-  it('1.2 RS256 - should create a JWT containing an error and message ack claim', function () {
-    let token = JWTUtils.signError(id, error, rs256Options);
+  it('1.2 RS256 - should create a JWT containing message ack claim', function () {
+    let token = JWTUtils.signMessageAck(id, rs256Options);
     assert(token, 'no token produced');
     let verified = JWTUtils.newVerify(token, rs256Options);
     verified.should.have.property('iss', 'bob.com');
     verified.should.have.property('sub', id);
-    verified.should.have.property(JWTClaims.ERROR_CLAIM, error);
     verified.should.have.property(JWTClaims.MESSAGE_ACK_ID_CLAIM, id);
-    verified.should.have.property(JWTClaims.PN_JWT_TYPE_CLAIM, JWTType.error);
+    verified.should.have.property(JWTClaims.PN_JWT_TYPE_CLAIM, JWTType.messageAck);
   }); //it 1.2
 
 }); // decscribe 1
