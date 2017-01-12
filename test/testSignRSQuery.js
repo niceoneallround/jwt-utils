@@ -42,24 +42,18 @@ describe('1 Sign RS Query Tests', function () {
     '@type': 'bogus',
   };
 
-  let syndEnt = [{
-    '@id': 'http://fake.synde',
-    '@type': 'bogus',
-  }];
-
   let privacyPipeId = 'pipe1';
 
   it('1.1 HS256 - should create a JWT containing a query, syndent, subject and a privacy pipe claim in the payload',
     function () {
       let props = { subject: query['@id'] };
 
-      let token = JWTUtils.signRSQuery(query, syndEnt, subject, privacyPipeId, hs256Options, props);
+      let token = JWTUtils.signRSQuery(query, subject, privacyPipeId, hs256Options, props);
       assert(token, 'no token produced');
       let verified = JWTUtils.newVerify(token, hs256Options);
       verified.should.have.property('iss', 'bob.com');
       verified.should.have.property('sub', query['@id']);
       verified.should.have.property(JWTClaims.QUERY_CLAIM, query);
-      verified.should.have.property(JWTClaims.SYNDICATED_ENTITY_CLAIM, syndEnt);
       verified.should.have.property(JWTClaims.SUBJECT_CLAIM, subject);
       verified.should.have.property(JWTClaims.PN_JWT_TYPE_CLAIM, JWTType.rsQuery);
       verified.should.have.property(JWTClaims.PRIVACY_PIPE_CLAIM, privacyPipeId);
@@ -68,13 +62,12 @@ describe('1 Sign RS Query Tests', function () {
   it('1.2 RS256 - should should create a JWT containing a subject claim in the payload', function () {
 
     let props = { subject: query['@id'] };
-    let token = JWTUtils.signRSQuery(query, syndEnt, subject, privacyPipeId, rs256Options, props);
+    let token = JWTUtils.signRSQuery(query, subject, privacyPipeId, rs256Options, props);
     assert(token, 'no token produced');
     let verified = JWTUtils.newVerify(token, rs256Options);
     verified.should.have.property('iss', 'bob.com');
     verified.should.have.property('sub', query['@id']);
     verified.should.have.property(JWTClaims.QUERY_CLAIM, query);
-    verified.should.have.property(JWTClaims.SYNDICATED_ENTITY_CLAIM, syndEnt);
     verified.should.have.property(JWTClaims.SUBJECT_CLAIM, subject);
     verified.should.have.property(JWTClaims.PN_JWT_TYPE_CLAIM, JWTType.rsQuery);
     verified.should.have.property(JWTClaims.PRIVACY_PIPE_CLAIM, privacyPipeId);
