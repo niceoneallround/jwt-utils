@@ -1,0 +1,65 @@
+/*jslint node: true, vars: true */
+const assert = require('assert');
+const JWTUtils = require('../lib/jwtUtils').jwtUtils;
+const JWTClaims = require('../lib/jwtUtils').claims;
+const should = require('should');
+const fs = require('fs');
+
+function readfile(path) {
+  'use strict';
+  return fs.readFileSync(__dirname + '/' + path).toString();
+}
+
+const rsaPrivateKey = readfile('rsa-private.pem');
+const rsaPublicKeyPEM = readfile('rsa-public.pem');
+const rsaX509certPEM = readfile('rsa.x509crt');
+
+describe('1 Sign Subject Query Tests', function () {
+  'use strict';
+
+  let hs256Options = {
+    issuer: 'bob.com',
+    type: 'HS256',
+    secret: 'secret'
+  };
+
+  let rs256Options = {
+    issuer: 'bob.com',
+    type: 'RS256',
+    privateKey: rsaPrivateKey,
+    publicKeyPEM: rsaPublicKeyPEM,
+    x509CertPEM: rsaX509certPEM,
+  };
+
+  let subjectQuery = {
+    '@id': 'http://bogus.domain.com/bogus1',
+    '@type': 'http:/bogus.domain.com/type#Bogus',
+    'http://bogus.domain.com/prop#name': 'heya', };
+
+  let privacyPipeId = 'pipe1';
+
+  it('1.1 HS256 - should create a JWT containing a subject query and a privacy pipe claim in the payload', function () {
+    let props = { subject: subjectQuery['@id'] };
+
+    let token = JWTUtils.signSubjectQuery(subjectQuery, privacyPipeId, hs256Options, props);
+    assert(token, 'no token produced');
+    let verified = JWTUtils.newVerify(token, hs256Options);
+    verified.should.have.property('iss', 'bob.com');
+    verified.should.have.property('sub', subjectQuery['@id']);
+    verified.should.have.property(JWTClaims.SUBJECT_QUERY_CLAIM, subjectQuery);
+    verified.should.have.property(JWTClaims.PRIVACY_PIPE_CLAIM, privacyPipeId);
+  }); //it 1.1
+
+  it('1.2 RS256 - should should create a JWT containing a subject query claim and pipe claim in the payload', function () {
+
+    let props = { subject: subjectQuery['@id'] };
+    let token = JWTUtils.signSubjectQuery(subjectQuery, privacyPipeId, rs256Options, props);
+    assert(token, 'no token produced');
+    let verified = JWTUtils.newVerify(token, rs256Options);
+    verified.should.have.property('iss', 'bob.com');
+    verified.should.have.property('sub', subjectQuery['@id']);
+    verified.should.have.property(JWTClaims.SUBJECT_QUERY_CLAIM, subjectQuery);
+    verified.should.have.property(JWTClaims.PRIVACY_PIPE_CLAIM, privacyPipeId);
+  }); //it 1.2
+
+}); // decscribe 1
