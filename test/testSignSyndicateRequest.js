@@ -59,6 +59,7 @@ describe('1 Sign Syndicate Request Tests', function () {
     verified.should.have.property(JWTClaims.SYNDICATE_REQUEST_CLAIM, syndRequest);
     verified.should.have.property(JWTClaims.SUBJECT_JWTS_CLAIM);
     verified.should.have.property(JWTClaims.PRIVACY_PIPE_CLAIM, privacyPipeId);
+    verified.should.have.property(JWTClaims.JWT_ID_CLAIM);
 
     verified[JWTClaims.SUBJECT_JWTS_CLAIM].length.should.be.equal(1);
     let subjectPayload = JWTUtils.newVerify(verified[JWTClaims.SUBJECT_JWTS_CLAIM][0], rs256Options);
@@ -76,6 +77,7 @@ describe('1 Sign Syndicate Request Tests', function () {
     verified.should.have.property(JWTClaims.SYNDICATE_REQUEST_CLAIM, syndRequest);
     verified.should.have.property(JWTClaims.SUBJECT_JWTS_CLAIM);
     verified.should.have.property(JWTClaims.PRIVACY_PIPE_CLAIM, privacyPipeId);
+    verified.should.have.property(JWTClaims.JWT_ID_CLAIM);
 
     verified[JWTClaims.SUBJECT_JWTS_CLAIM].length.should.be.equal(1);
     let subjectPayload = JWTUtils.newVerify(verified[JWTClaims.SUBJECT_JWTS_CLAIM][0], rs256Options);
