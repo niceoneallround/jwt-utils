@@ -38,15 +38,14 @@ describe('1 Sign Syndicate Request Tests', function () {
 
   let pnDataModelId = '23';
   let syndicationId = 'syndId-1';
+  let privacyPipeId = 'pipe1';
 
-  let subjectJWT = JWTUtils.signSubject(subject, pnDataModelId, syndicationId, rs256Options, { subject: subject['@id'] });
+  let subjectJWT = JWTUtils.signSubject(subject, pnDataModelId, syndicationId, rs256Options, { subject: subject['@id'], privacyPipe: privacyPipeId, });
 
   let syndRequest = {
     '@id': 'http://fake.synd.request',
     '@type': 'bogus',
   };
-
-  let privacyPipeId = 'pipe1';
 
   it('1.1 HS256 - should create a JWT containing a syndicate request, a subjects_jwt, and a privacy pipe claim in the payload', function () {
     let props = { subject: syndRequest['@id'] };
