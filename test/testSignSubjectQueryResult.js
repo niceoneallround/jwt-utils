@@ -49,7 +49,7 @@ describe('1 Sign Subject Query Result Tests', function () {
     verified.should.have.property('iss', 'bob.com');
     verified.should.have.property('sub', subjectQueryResult['@id']);
     verified.should.have.property(JWTClaims.PN_JWT_TYPE_CLAIM, JWTType.subjectQueryResult);
-    verified.should.have.property(JWTClaims.SUBJECT_QUERY_CLAIM, subjectQueryResult);
+    verified.should.have.property(JWTClaims.SUBJECT_QUERY_RESULT_CLAIM, subjectQueryResult);
     verified.should.have.property(JWTClaims.SUBJECT_CLAIM, subjects);
     verified.should.have.property(JWTClaims.PRIVACY_PIPE_CLAIM, privacyPipeId);
   }); //it 1.1
@@ -63,7 +63,7 @@ describe('1 Sign Subject Query Result Tests', function () {
     verified.should.have.property('iss', 'bob.com');
     verified.should.have.property('sub', subjectQueryResult['@id']);
     verified.should.have.property(JWTClaims.PN_JWT_TYPE_CLAIM, JWTType.subjectQueryResult);
-    verified.should.have.property(JWTClaims.SUBJECT_QUERY_CLAIM, subjectQueryResult);
+    verified.should.have.property(JWTClaims.SUBJECT_QUERY_RESULT_CLAIM, subjectQueryResult);
     verified.should.have.property(JWTClaims.SUBJECT_CLAIM, subjects);
     verified.should.have.property(JWTClaims.PRIVACY_PIPE_CLAIM, privacyPipeId);
   }); //it 1.2
