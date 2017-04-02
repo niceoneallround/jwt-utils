@@ -30,14 +30,14 @@
     "gulp-istanbul": "^1.0.0",
     "gulp-jscs": "^4.0.0",
     "gulp-jshint": "^2.0.1",
-    "gulp-mocha": "^3.0.1",
+    "gulp-mocha": "^4.3.0",
     "gulp-nsp": "^2.4.2",
     "js-yaml": "^3.6.1",
     "jshint": "^2.9.2",
     "jshint-stylish": "^2.2.0",
     "mocha": "^3.1.2",
     "should": "^11.1.2",
-    "yargs": "^6.5.0"
+    "yargs": "^7.0.2"
   },
   "dependencies": {
     "jsonwebtoken": "^7.2.1"
