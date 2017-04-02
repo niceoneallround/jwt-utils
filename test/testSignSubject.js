@@ -1,4 +1,7 @@
 /*jslint node: true, vars: true */
+/*
+  Test Subject JWT
+*/
 const assert = require('assert');
 const jwtHelpers = require('../lib/jwtUtils').jwtUtils;
 const jwtClaims = require('../lib/jwtUtils').claims;

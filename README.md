@@ -1,23 +1,25 @@
 
-Provides JWT utils that are used inside the Privacy Network.
+Used to create the JWTs produced by the Privacy Network.
 
-Private claims that can be added to the payload
- - https://pn.schema.webshield.io/prop#metadata - holds metadata claims
-   - note the whole JWT is needed to create JSON-LD metadata node - for example sub is the @id
- - https://pn.schema.webshield.io/prop#pn_graph - holds subject data in a JSON-LD graph
- - https://pn.schema.webshield.io/prop#privacy_pipe' - optional and holds the privacy pipe @id
+The JWT payloads contain JSON LD information and have the following format
 
-Standard claims
- - iss required
- - sub (optional)
- - exp (optional)
- - iat added
+- standard claims
+  - iss the issuer - is a typed value and may contain: cnames, address, or other
+  - sub the @id of item
+  - iat - time issued
+  - exp (optional)
+
+- common private claims
+  - https://pn.schema.webshield.io/prop#jwt_type - the JWT type
+
+- private claims that are specific to the JWT type
+  - see the jwtUtils file for these.
 
 Signing
-  - HS256 shared secret is passed in
   - RS256 so add PEM files to the JWT for verification the following header props are used
     - http://pn.schema.webshield.io/prop#jwk_pem - holds the public key PEM
-    - http://pn.schema.webshield.io/prop#x5c_pem - holds an array with the x509cert PEM for the public key.
+    - http://pn.schema.webshield.io/prop#x5c_pem - holds the x509cert PEM for the public key and bound identity. Can be used to validate
+  - HS256 shared secret is passed in
 
 It uses the following node module
  - https://github.com/auth0/node-jsonwebtoken
